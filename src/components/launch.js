@@ -25,6 +25,7 @@ import { useSpaceX } from "../utils/use-space-x";
 import { formatDateTime } from "../utils/format-date";
 import Error from "./error";
 import Breadcrumbs from "./breadcrumbs";
+import TooltipWrapper from "./tooltip-wrapper";
 
 export default function Launch() {
   let { launchId } = useParams();
@@ -113,7 +114,12 @@ function Header({ launch }) {
   );
 }
 
+const TooltipStatNumber = TooltipWrapper(StatNumber);
+
 function TimeAndLocation({ launch }) {
+  const localLaunchDateTime = formatDateTime(launch.launch_date_local);
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
   return (
     <SimpleGrid columns={[1, 1, 2]} borderWidth="1px" p="4" borderRadius="md">
       <Stat>
@@ -123,9 +129,15 @@ function TimeAndLocation({ launch }) {
             Launch Date
           </Box>
         </StatLabel>
-        <StatNumber fontSize={["md", "xl"]}>
-          {formatDateTime(launch.launch_date_local)}
-        </StatNumber>
+        <TooltipStatNumber
+          fontSize={["md", "xl"]}
+          tooltip={{
+            label: timezone,
+            placement: "top",
+          }}
+        >
+          {localLaunchDateTime}
+        </TooltipStatNumber>
         <StatHelpText>{timeAgo(launch.launch_date_utc)}</StatHelpText>
       </Stat>
       <Stat>
@@ -136,10 +148,7 @@ function TimeAndLocation({ launch }) {
           </Box>
         </StatLabel>
         <StatNumber fontSize={["md", "xl"]}>
-          <Link
-            as={RouterLink}
-            to={`/launch-pads/${launch.launch_site.site_id}`}
-          >
+          <Link as={RouterLink} to={`/launch-pads/${launch.launch_site.site_id}`}>
             {launch.launch_site.site_name_long}
           </Link>
         </StatNumber>
@@ -153,13 +162,7 @@ function RocketInfo({ launch }) {
   const cores = launch.rocket.first_stage.cores;
 
   return (
-    <SimpleGrid
-      columns={[1, 1, 2]}
-      borderWidth="1px"
-      mt="4"
-      p="4"
-      borderRadius="md"
-    >
+    <SimpleGrid columns={[1, 1, 2]} borderWidth="1px" mt="4" p="4" borderRadius="md">
       <Stat>
         <StatLabel display="flex">
           <Box as={Navigation} width="1em" />{" "}
@@ -167,9 +170,7 @@ function RocketInfo({ launch }) {
             Rocket
           </Box>
         </StatLabel>
-        <StatNumber fontSize={["md", "xl"]}>
-          {launch.rocket.rocket_name}
-        </StatNumber>
+        <StatNumber fontSize={["md", "xl"]}>{launch.rocket.rocket_name}</StatNumber>
         <StatHelpText>{launch.rocket.rocket_type}</StatHelpText>
       </Stat>
       <StatGroup>
