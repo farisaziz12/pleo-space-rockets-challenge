@@ -8,17 +8,32 @@ import Error from "./error";
 import Breadcrumbs from "./breadcrumbs";
 import LoadMoreButton from "./load-more-button";
 import FavoriteStar from "./favorite-star";
+import SearchInput from "./search-input";
+import SelectFilter from "./select-filter";
 
-export default function Launches({ data, error, isValidating, setSize, size, pageSize }) {
+export default function Launches({
+  data,
+  error,
+  isValidating,
+  setSize,
+  size,
+  pageSize,
+  setSearch,
+  setFlightSuccessFilter,
+}) {
   return (
     <div>
       <Breadcrumbs items={[{ label: "Home", to: "/" }, { label: "Launches" }]} />
+      <Flex justify="space-evenly">
+        <SelectFilter label="Success Filter" options={["all", "success", "fail"]} onChange={setFlightSuccessFilter} />
+        <SearchInput onChange={setSearch} />
+      </Flex>
       <SimpleGrid m={[2, null, 6]} minChildWidth="350px" spacing="4">
         {error && <Error />}
         {data &&
-          data.flat().map((launch) => (
-            <LaunchItem launch={launch} key={launch.flight_number} />
-          ))}
+          data
+            .flat()
+            .map((launch) => <LaunchItem launch={launch} key={launch.flight_number} />)}
       </SimpleGrid>
       <LoadMoreButton
         loadMore={() => setSize(size + 1)}
