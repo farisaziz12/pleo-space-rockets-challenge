@@ -21,7 +21,7 @@ const XContainer = styled.div`
 
 export default function FavoritesDrawer({launches, ...props}) {
   const { favorites, removeFavorite } = useFavoritesContext();
-console.log(launches);
+
   const renderLaunchItems = () => {
     if (!favorites.length) return null;
 

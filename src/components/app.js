@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import { Flex, Text, Button } from "@chakra-ui/core";
 
 import { useSpaceXPaginated } from "../utils/use-space-x";
+import { capitalize } from "../utils/capitalize";
 import { FavoritesProvider } from "../contexts";
 import Launches from "./launches";
 import Launch from "./launch";
@@ -15,25 +16,45 @@ const PAGE_SIZE = 12;
 
 export default function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [rocketSearch, setRocketSearch] = useState("");
+  const [flightSuccessFilter, setFlightSuccessFilter] = useState("all");
+  const isSuccess = flightSuccessFilter === "success";
 
-    const response = useSpaceXPaginated(
-    "/launches/past",
-    {
-      limit: PAGE_SIZE,
-      order: "desc",
-      sort: "launch_date_utc",
-    }
-  );
+  const response = useSpaceXPaginated("/launches/past", {
+    limit: PAGE_SIZE,
+    order: "desc",
+    sort: "launch_date_utc",
+    rocket_name: capitalize(rocketSearch),
+    ...(flightSuccessFilter === "all" ? {} : { launch_success: isSuccess }),
+  });
+  const { data } = response;
 
+  const handleSearch = (value) => {
+    setRocketSearch(value);
+  };
 
   return (
     <>
       <NavBar openDrawer={() => setIsDrawerOpen(true)} />
       <FavoritesProvider>
-        <FavoritesDrawer launches={response.data?.flat()} onClose={() => setIsDrawerOpen(false)} isOpen={isDrawerOpen} />
+        <FavoritesDrawer
+          launches={data?.flat()}
+          onClose={() => setIsDrawerOpen(false)}
+          isOpen={isDrawerOpen}
+        />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/launches" element={<Launches {...response} pageSize={PAGE_SIZE} />} />
+          <Route
+            path="/launches"
+            element={
+              <Launches
+                {...response}
+                setSearch={handleSearch}
+                setFlightSuccessFilter={setFlightSuccessFilter}
+                pageSize={PAGE_SIZE}
+              />
+            }
+          />
           <Route path="/launches/:launchId" element={<Launch />} />
           <Route path="/launch-pads" element={<LaunchPads />} />
           <Route path="/launch-pads/:launchPadId" element={<LaunchPad />} />
