@@ -19,22 +19,21 @@ const XContainer = styled.div`
   cursor: pointer;
 `;
 
-export default function FavoritesDrawer(props) {
+export default function FavoritesDrawer({launches, ...props}) {
   const { favorites, removeFavorite } = useFavoritesContext();
-
+console.log(launches);
   const renderLaunchItems = () => {
     if (!favorites.length) return null;
 
-    return favorites.map((launch) => {
+    return favorites.map((flightNumber) => {
       return (
-        <React.Fragment key={launch.flight_number}>
+        <React.Fragment key={flightNumber}>
           <XContainer>
-            <XCircle onClick={() => removeFavorite(launch.flight_number)} color="red" />
+            <XCircle onClick={() => removeFavorite(flightNumber)} color="red" />
           </XContainer>
           <LaunchItem
             variant="mini"
-            key={launch.flight_number}
-            launch={launch}
+            launch={launches?.find((launch) => launch.flight_number === flightNumber)}
             shouldShowFav={false}
           />
         </React.Fragment>

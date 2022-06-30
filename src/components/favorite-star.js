@@ -5,7 +5,7 @@ import { useFavoritesContext } from "../hooks";
 export default function FavoriteStar({ launch }) {
   const { flight_number: flightNumber } = launch;
   const { favorites, addFavorite, removeFavorite } = useFavoritesContext();
-  const isInFavorites = favorites.some((launch) => launch.flight_number === flightNumber);
+  const isInFavorites = favorites.some((favFlightNumber) => favFlightNumber === flightNumber);
 
   const handleClick = (event) => {
     event.preventDefault(); // prevent click event from bubbling up to the link
@@ -13,7 +13,7 @@ export default function FavoriteStar({ launch }) {
     if (isInFavorites) {
       removeFavorite(flightNumber);
     } else {
-      addFavorite(launch);
+      addFavorite(flightNumber);
     }
   };
 

@@ -3,40 +3,27 @@ import { Link } from "react-router-dom";
 import { Badge, Box, Image, SimpleGrid, Text, Flex } from "@chakra-ui/core";
 import { format as timeAgo } from "timeago.js";
 
-import { useSpaceXPaginated } from "../utils/use-space-x";
 import { formatDate } from "../utils/format-date";
 import Error from "./error";
 import Breadcrumbs from "./breadcrumbs";
 import LoadMoreButton from "./load-more-button";
 import FavoriteStar from "./favorite-star";
 
-const PAGE_SIZE = 12;
-
-export default function Launches() {
-  const { data, error, isValidating, setSize, size } = useSpaceXPaginated(
-    "/launches/past",
-    {
-      limit: PAGE_SIZE,
-      order: "desc",
-      sort: "launch_date_utc",
-    }
-  );
-
-  console.log(data, error);
+export default function Launches({ data, error, isValidating, setSize, size, pageSize }) {
   return (
     <div>
       <Breadcrumbs items={[{ label: "Home", to: "/" }, { label: "Launches" }]} />
       <SimpleGrid m={[2, null, 6]} minChildWidth="350px" spacing="4">
         {error && <Error />}
         {data &&
-          data
-            .flat()
-            .map((launch) => <LaunchItem launch={launch} key={launch.flight_number} />)}
+          data.flat().map((launch) => (
+            <LaunchItem launch={launch} key={launch.flight_number} />
+          ))}
       </SimpleGrid>
       <LoadMoreButton
         loadMore={() => setSize(size + 1)}
         data={data}
-        pageSize={PAGE_SIZE}
+        pageSize={pageSize}
         isLoadingMore={isValidating}
       />
     </div>

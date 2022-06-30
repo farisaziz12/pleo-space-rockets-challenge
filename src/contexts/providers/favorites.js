@@ -5,13 +5,13 @@ import { FavoritesContext } from "../index";
 export const FavoritesProvider = ({ children }) => {
   const [favorites, setFavorites] = useLocalStorage("favorites", []);
 
-  const addFavorite = (launch) => {
-    setFavorites((prevState) => [...prevState, launch]);
+  const addFavorite = (flightNumber) => {
+    setFavorites((prevState) => [...prevState, flightNumber]);
   };
 
-  const removeFavorite = (flightNumber) => {
+  const removeFavorite = (flightNumberToRemove) => {
     setFavorites((prevState) =>
-      prevState.filter((launch) => launch.flight_number !== flightNumber)
+      prevState.filter((flightNumber) => flightNumber !== flightNumberToRemove)
     );
   };
 
