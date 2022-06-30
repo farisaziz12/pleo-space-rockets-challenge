@@ -1,13 +1,14 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Badge, Box, Image, SimpleGrid, Text, Flex } from "@chakra-ui/core";
 import { format as timeAgo } from "timeago.js";
-import { Link } from "react-router-dom";
 
 import { useSpaceXPaginated } from "../utils/use-space-x";
 import { formatDate } from "../utils/format-date";
 import Error from "./error";
 import Breadcrumbs from "./breadcrumbs";
 import LoadMoreButton from "./load-more-button";
+import FavoriteStar from "./favorite-star";
 
 const PAGE_SIZE = 12;
 
@@ -20,20 +21,17 @@ export default function Launches() {
       sort: "launch_date_utc",
     }
   );
+
   console.log(data, error);
   return (
     <div>
-      <Breadcrumbs
-        items={[{ label: "Home", to: "/" }, { label: "Launches" }]}
-      />
+      <Breadcrumbs items={[{ label: "Home", to: "/" }, { label: "Launches" }]} />
       <SimpleGrid m={[2, null, 6]} minChildWidth="350px" spacing="4">
         {error && <Error />}
         {data &&
           data
             .flat()
-            .map((launch) => (
-              <LaunchItem launch={launch} key={launch.flight_number} />
-            ))}
+            .map((launch) => <LaunchItem launch={launch} key={launch.flight_number} />)}
       </SimpleGrid>
       <LoadMoreButton
         loadMore={() => setSize(size + 1)}
@@ -45,7 +43,9 @@ export default function Launches() {
   );
 }
 
-export function LaunchItem({ launch }) {
+export function LaunchItem({ launch, variant = "", shouldShowFav = true }) {
+  const isMini = variant === "mini";
+
   return (
     <Box
       as={Link}
@@ -62,10 +62,10 @@ export function LaunchItem({ launch }) {
           launch.links.mission_patch_small
         }
         alt={`${launch.mission_name} launch`}
-        height={["200px", null, "300px"]}
+        height={isMini ? "100px" : ["200px", null, "300px"]}
         width="100%"
         objectFit="cover"
-        objectPosition="bottom"
+        objectPosition={isMini ? "center" : "bottom"}
       />
 
       <Image
@@ -101,20 +101,17 @@ export function LaunchItem({ launch }) {
           </Box>
         </Box>
 
-        <Box
-          mt="1"
-          fontWeight="semibold"
-          as="h4"
-          lineHeight="tight"
-          isTruncated
-        >
+        <Box mt="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
           {launch.mission_name}
         </Box>
-        <Flex>
-          <Text fontSize="sm">{formatDate(launch.launch_date_utc)} </Text>
-          <Text color="gray.500" ml="2" fontSize="sm">
-            {timeAgo(launch.launch_date_utc)}
-          </Text>
+        <Flex justify="space-between">
+          <Flex>
+            <Text fontSize="sm">{formatDate(launch.launch_date_utc)} </Text>
+            <Text color="gray.500" ml="2" fontSize="sm">
+              {timeAgo(launch.launch_date_utc)}
+            </Text>
+          </Flex>
+          {shouldShowFav && <FavoriteStar launch={launch} />}
         </Flex>
       </Box>
     </Box>
